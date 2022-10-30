@@ -31,7 +31,7 @@ volatile uint8_t gTimer2 = 0;
 
 volatile Color_t gColor = { .r = 8, .g = 8, .b = 8 };
 
-static inline __TIMER_PWM_Set_value(uint8_t x) {
+static inline uint8_t __TIMER_PWM_Set_value(uint8_t x) {
 	return TIM_PWM_INVERTED ? 255 - x : x;
 }
 
