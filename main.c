@@ -29,9 +29,7 @@
 volatile uint8_t gTimer1 = 0;
 volatile uint8_t gTimer2 = 0;
 
-volatile uint8_t gR = 8;
-volatile uint8_t gG = 8;
-volatile uint8_t gB = 8;
+volatile Color_t gColor = { .r = 8, .g = 8, .b = 8 };
 
 static inline __TIMER_PWM_Set_value(uint8_t x) {
 	return TIM_PWM_INVERTED ? 255 - x : x;
@@ -58,8 +56,7 @@ int main(void)
 	OCR2A = 255;
 
 	sei();	
-	
-	uint8_t step = 0;
+
     while (1) 
     {
 		if (!gTimer1)
@@ -73,11 +70,7 @@ int main(void)
 		{
 			gTimer2 = T0_TICKS_PER_SECOND(10);	
 			
-			gR = LED_funcR(step);
-			gG = LED_funcG(step);
-			gB = LED_funcB(step);
-			
-			step += 1;
+			gColor = LED_NextColor();
 		}
     }
 }
@@ -100,12 +93,12 @@ ISR(TIMER0_OVF_vect)
 		gTimer2 = --t;
 	}
 	
-	OCR0A = __TIMER_PWM_Set_value(gR);
-	OCR0B = __TIMER_PWM_Set_value(gG);
+	OCR0A = __TIMER_PWM_Set_value(gColor.r);
+	OCR0B = __TIMER_PWM_Set_value(gColor.g);
 }
 
 ISR(TIMER2_OVF_vect)
 {
 	// Interrupt routine for update the OCR2A
-	OCR2A = __TIMER_PWM_Set_value(gB);
+	OCR2A = __TIMER_PWM_Set_value(gColor.b);
 }

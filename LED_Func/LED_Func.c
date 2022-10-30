@@ -17,7 +17,12 @@
 #define LED_PERIOD		((UINT)(LED_MAX_LEVEL) * 3)
 
 
-uint8_t LED_funcR(uint16_t x) {
+static struct {
+	uint8_t colorChange;
+	uint16_t step;
+} __LED_Control;
+
+static uint8_t __LED_funcR(uint16_t x) {
 	x = x % LED_PERIOD;
 	
 	uint8_t y;
@@ -37,7 +42,7 @@ uint8_t LED_funcR(uint16_t x) {
 	return y;
 }
 
-uint8_t LED_funcG(uint16_t x)
+static uint8_t __LED_funcG(uint16_t x)
 {
 	x = x % LED_PERIOD;
 	
@@ -58,7 +63,7 @@ uint8_t LED_funcG(uint16_t x)
 	return y;
 }
 
-uint8_t LED_funcB(uint16_t x)
+static uint8_t __LED_funcB(uint16_t x)
 {
 		x = x % LED_PERIOD;
 		
@@ -78,3 +83,24 @@ uint8_t LED_funcB(uint16_t x)
 		
 		return y;
 }
+
+void LED_ColorChangeEnable(void) {
+	__LED_Control.colorChange = 1;
+}
+
+void LED_ColorChangeDisable(void) {
+	__LED_Control.colorChange = 0;
+}
+
+Color_t LED_NextColor(void) {
+	Color_t color;
+	
+	uint16_t step = __LED_Control.step++;
+	
+	color.r = __LED_funcR(step);
+	color.g = __LED_funcG(step);
+	color.b = __LED_funcB(step);
+	
+	return color;
+}
+

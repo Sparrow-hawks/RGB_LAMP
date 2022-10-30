@@ -17,10 +17,11 @@ typedef struct {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
-} LED_RGB_t;
+} Color_t;
 
-uint8_t LED_funcR(uint16_t x);
-uint8_t LED_funcG(uint16_t x);
-uint8_t LED_funcB(uint16_t x);
+void	LED_ColorChangeEnable(void);
+void	LED_ColorChangeDisable(void);
+
+Color_t LED_NextColor(void);
 
 #endif /* LED_FUNC_H_ */
