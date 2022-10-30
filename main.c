@@ -24,6 +24,7 @@
  */
 
 #define T0_TICKS_PER_SECOND(T)	(F_CPU / 8UL / 256UL) / (T)		
+#define TIM_PWM_INVERTED		1
 
 volatile uint8_t gTimer1 = 0;
 volatile uint8_t gTimer2 = 0;
@@ -32,6 +33,9 @@ volatile uint8_t gR = 8;
 volatile uint8_t gG = 8;
 volatile uint8_t gB = 8;
 
+static inline __TIMER_PWM_Set_value(uint8_t x) {
+	return TIM_PWM_INVERTED ? 255 - x : x;
+}
 
 int main(void)
 {
@@ -43,15 +47,15 @@ int main(void)
 	TCCR0B = _BV(CS01);
 	TIMSK0 = _BV(TOIE0);
 	
-	OCR0A = LED_LEVEL(gR); 
-	OCR0B = LED_LEVEL(gG);
+	OCR0A = 255; 
+	OCR0B = 255;
 	
 	/* Timer 2 config for PWM OCR2A */
 	TCCR2A = _BV(WGM00) | _BV(WGM01) | _BV(COM2A1);
 	TCCR2B = _BV(CS01);
 	TIMSK2 = _BV(TOIE2);
 	
-	OCR2A = LED_LEVEL(gB);
+	OCR2A = 255;
 
 	sei();	
 	
@@ -96,12 +100,12 @@ ISR(TIMER0_OVF_vect)
 		gTimer2 = --t;
 	}
 	
-	OCR0A = LED_LEVEL(gR);
-	OCR0B = LED_LEVEL(gG);
+	OCR0A = __TIMER_PWM_Set_value(gR);
+	OCR0B = __TIMER_PWM_Set_value(gG);
 }
 
 ISR(TIMER2_OVF_vect)
 {
 	// Interrupt routine for update the OCR2A
-	OCR2A = LED_LEVEL(gB);
+	OCR2A = __TIMER_PWM_Set_value(gB);
 }
